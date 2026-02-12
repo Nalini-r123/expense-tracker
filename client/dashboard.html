@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+<link rel="stylesheet" href="./css/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<h2>
+Expense Dashboard
+<button onclick="logout()" style="float:right;margin-right:20px;background:#ff4d4d">
+Logout
+</button>
+</h2>
+
+<div class="container">
+
+
+<!-- ADD EXPENSE -->
+<div class="card">
+<h3>Add Expense</h3>
+
+<input id="amount" placeholder="Amount">
+<input id="category" placeholder="Category">
+<input id="date" type="date" required>
+
+<button onclick="addExpense()">Add Expense</button>
+
+<p id="msg"></p>
+</div>
+
+
+
+<!-- BUDGET -->
+<div class="card">
+<h3>Monthly Budget</h3>
+
+<input id="budgetInput" placeholder="Set Monthly Budget">
+<button onclick="setBudget()">Set Budget</button>
+
+<br><br>
+
+<div class="progress">
+<div id="bar"></div>
+</div>
+
+<p id="budgetText"></p>
+</div>
+
+
+
+<!-- CHART -->
+<div class="card">
+<h3>Expense Trend</h3>
+<canvas id="chart"></canvas>
+</div>
+
+
+
+<!-- TABLE -->
+<div class="card">
+<h3>Expense List</h3>
+
+<table id="table">
+<thead>
+<tr>
+<th>Amount</th>
+<th>Category</th>
+<th>Date</th>
+<th>Delete</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* TOKEN CHECK */
+const token = localStorage.getItem("token");
+
+if(!token){
+alert("Please login first");
+window.location="login.html";
+}
+
+
+/* LOGOUT */
+function logout(){
+localStorage.removeItem("token");
+window.location="login.html";
+}
+
+
+
+/* ADD EXPENSE */
+async function addExpense(){
+
+if(!date.value){
+alert("Please select date");
+return;
+}
+
+const res = await fetch("http://localhost:5000/api/expenses",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({
+amount:amount.value,
+category:category.value,
+expense_date:date.value
+})
+});
+
+const data = await res.json();
+msg.innerText=data.message;
+
+/* CLEAR INPUTS */
+amount.value="";
+category.value="";
+date.value="";
+
+loadChart();
+loadTable();
+loadBudget();
+}
+
+
+
+/* DELETE */
+async function deleteExpense(id){
+
+await fetch(`http://localhost:5000/api/expenses/${id}`,{
+method:"DELETE",
+headers:{ Authorization:token }
+});
+
+loadChart();
+loadTable();
+loadBudget();
+}
+
+
+
+/* TABLE */
+async function loadTable(){
+
+const res = await fetch("http://localhost:5000/api/expenses",{
+headers:{ Authorization:token }
+});
+
+const data = await res.json();
+
+const tbody=document.querySelector("#table tbody");
+tbody.innerHTML="";
+
+data.forEach(e=>{
+tbody.innerHTML+=`
+<tr>
+<td>${e.amount}</td>
+<td>${e.category}</td>
+<td>${e.expense_date.split("T")[0]}</td>
+<td><button onclick="deleteExpense(${e.id})">X</button></td>
+</tr>`;
+});
+}
+
+
+
+/* CHART */
+let chart;
+
+async function loadChart(){
+
+const res = await fetch("http://localhost:5000/api/expenses",{
+headers:{ Authorization:token }
+});
+
+const data = await res.json();
+
+const labels = data.map(e=>e.expense_date.split("T")[0]);
+const values = data.map(e=>e.amount);
+
+const ctx=document.getElementById("chart");
+
+if(chart){
+chart.destroy();
+}
+
+chart=new Chart(ctx,{
+type:"line",
+data:{
+labels:labels,
+datasets:[{
+label:"Expenses",
+data:values,
+borderWidth:3,
+tension:0.4,
+fill:true
+}]
+}
+});
+}
+
+
+
+/* SET BUDGET */
+async function setBudget(){
+
+const now = new Date();
+
+await fetch("http://localhost:5000/api/budget",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+Authorization:token
+},
+body:JSON.stringify({
+month: now.getMonth()+1,
+year: now.getFullYear(),
+budget_limit: budgetInput.value
+})
+});
+
+budgetInput.value="";
+loadBudget();
+}
+
+
+
+/* BUDGET BAR */
+async function loadBudget(){
+
+const res = await fetch("http://localhost:5000/api/budget/status",{
+headers:{ Authorization:token }
+});
+
+const data = await res.json();
+
+const percent = data.limit ? (data.spent/data.limit)*100 : 0;
+
+const bar=document.getElementById("bar");
+bar.style.width=percent+"%";
+
+if(percent>=100) bar.style.background="red";
+else if(percent>=80) bar.style.background="orange";
+else bar.style.background="#4facfe";
+
+document.getElementById("budgetText").innerText=
+`Spent ₹${data.spent} of ₹${data.limit}`;
+}
+
+
+
+/* INITIAL LOAD */
+loadChart();
+loadTable();
+loadBudget();
+
+</script>
+
+</body>
+</html>

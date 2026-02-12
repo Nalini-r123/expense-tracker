@@ -1,0 +1,150 @@
+/* ===== PAGE BACKGROUND ===== */
+body{
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#dfe9f3,#ffffff);
+    margin:0;
+    padding:0;
+}
+
+
+/* ===== HEADER ===== */
+h2{
+    text-align:center;
+    padding:25px;
+    margin:0;
+    color:white;
+    background: linear-gradient(90deg,#141e30,#243b55);
+    letter-spacing:1px;
+}
+
+
+/* ===== MAIN CONTAINER ===== */
+.container{
+    width:85%;
+    margin:auto;
+    margin-top:30px;
+}
+
+
+/* ===== CARD STYLE ===== */
+.card{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    margin-bottom:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.08);
+}
+
+
+/* ===== TITLES ===== */
+h3{
+    margin-top:0;
+    color:#243b55;
+}
+
+
+/* ===== INPUT ===== */
+input{
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    margin:5px;
+    font-size:14px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#4facfe;
+    box-shadow:0 0 6px rgba(79,172,254,0.4);
+}
+
+
+/* ===== BUTTON ===== */
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:10px;
+    background:linear-gradient(45deg,#4facfe,#00f2fe);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 18px rgba(0,0,0,0.2);
+}
+
+
+/* ===== SUCCESS TEXT ===== */
+#msg{
+    color:#27ae60;
+    font-weight:bold;
+}
+
+
+/* ===== TABLE ===== */
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#243b55;
+    color:white;
+    padding:12px;
+}
+
+td{
+    padding:12px;
+    text-align:center;
+}
+
+tr:nth-child(even){
+    background:#f4f8fc;
+}
+
+tr:hover{
+    background:#eaf3ff;
+}
+
+
+/* DELETE BUTTON */
+td button{
+    background:#ff4d4d;
+    padding:6px 12px;
+}
+
+td button:hover{
+    background:#cc0000;
+}
+
+
+/* ===== CHART ===== */
+canvas{
+    padding:15px;
+}
+
+
+/* ===== BUDGET BAR ===== */
+.progress{
+    width:100%;
+    height:22px;
+    background:#e6eef7;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+#bar{
+    height:100%;
+    width:0%;
+    background:#4facfe;
+    transition:.5s;
+}
+
+
+/* ===== TEXT ===== */
+p{
+    color:#333;
+}
